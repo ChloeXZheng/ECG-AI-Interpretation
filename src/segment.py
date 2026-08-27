@@ -1,7 +1,8 @@
+import numpy as np
 # Date: 8/26/2026
 # Purpose: Take a continuous EEG signal and break it into smaller windows of data
 
-def create_windows(eeg, sampling rate=128, window_seconds=4):
+def create_windows (eeg, sampling_rate=128, window_seconds=4):
     # creates a function called create_windows (EEG data -> create_windows -> windows)
     # window_seconds=4 means that each eeg window = 4 seconds long
 
@@ -24,7 +25,7 @@ def create_windows(eeg, sampling rate=128, window_seconds=4):
         # random: python .append() method adds a single element to the very end of an existing list
 
     return windows
- 
+
 # TESTING
 eeg = np.random.rand(25472, 14)
 
