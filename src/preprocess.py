@@ -19,6 +19,7 @@ def baseline_correct(stimulus, baseline):
     # returns the corrected values
     return corrected
 
+
 """
 elaboration on the baseline_mean:
     - basically, our data looks like:
