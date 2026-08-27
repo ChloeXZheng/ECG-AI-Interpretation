@@ -1,0 +1,2 @@
+1. EEG sampling rate is 128 Hz
+    - 128 rows/samples for every second of EEG recording
