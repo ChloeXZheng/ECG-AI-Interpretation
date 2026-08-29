@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from segment import create_windows
+from .segment import create_windows
 
 # Function: creates parallel arrays - data + label + metadata
 # Parameters: eeg = the eeg data
@@ -74,3 +74,5 @@ np.full():
         fill_value: the value placed in every position
         dtype: optional data type used to store the values
 """
+
+# ACTUALLY BUILDING THE DATASET!!!

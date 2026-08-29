@@ -37,7 +37,7 @@ elaboration on the baseline_mean:
 from scipy.signal import butter, filtfilt
 
 # Function: filters out the frequencies we don't want. SEE BELOW FUNCTIONS
-# Parameters: eeg = the eeg data we wanna process
+# Parameters: eeg = the eeg data we wanna process (baseline corrected)
 #             sampling_rate = how many times per sec EEG is measured ; default value can be overridden
 #             low = the lowest frequency we want to keep ; default value can be overridden
 #             high = the highest frequency we want to keep ; default value can be overridden
