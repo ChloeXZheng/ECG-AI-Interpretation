@@ -36,7 +36,7 @@ elaboration on the baseline_mean:
 # imports butter, filtfilt methods from module signal in library scipy, for "bandpass_filter()" method
 from scipy.signal import butter, filtfilt
 
-# Function: filters out the frequencies we don't want
+# Function: filters out the frequencies we don't want. SEE BELOW FUNCTIONS
 # Parameters: eeg = the eeg data we wanna process
 #             sampling_rate = how many times per sec EEG is measured ; default value can be overridden
 #             low = the lowest frequency we want to keep ; default value can be overridden
@@ -58,6 +58,27 @@ def bandpass_filter(eeg, sampling_rate=128, low=4, high=45): # not harcoding the
     )
 
     return filtered
+
+## ORRR we can create two separate functions
+# this means we create the filter FIRST so we dont have to recalculate all the time
+def create_bandpass_filter(sampling_rate=128, low=4, high=45):
+    b, a = butter(
+        4,
+        [low, high],
+        btype="band",
+        fs=sampling_rate
+    )
+
+    return b, a
+
+# and this is actually doing the filtering
+def apply_bandpass_filter(eeg, b, a):
+    return filtfilt(
+        b,
+        a,
+        eeg,
+        axis=0
+    )
 
 """
 elaboration on the cutoff numbers for frequency:
