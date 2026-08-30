@@ -10,7 +10,7 @@ from src.preprocess import (
 from src.dataset import add_trial_to_dataset
 
 # load the data
-dreamer = load_dreamer('data/DREAMER.mat')
+dreamer = load_dreamer('DREAMER.mat')
 
 # access the participant & the trial 
 participant_id = 0

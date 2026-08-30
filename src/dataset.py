@@ -5,6 +5,20 @@ import numpy as np
 
 from .segment import create_windows
 
+# Function: inputs 3 functions from preprocess.py to use inside dataset.py
+from .preprocess import (
+
+    # measures EEG relative to patient's starting baseline
+    baseline_correct, 
+
+    # creates and designs filter to remove noise from EEG data 
+    create_bandpass_filter,
+
+    # applies the filter to the data
+    apply_bandpass_filter,
+)
+
+
 # Function: creates parallel arrays - data + label + metadata
 # Parameters: eeg = the eeg data
 #             label = the trial this is from
@@ -76,3 +90,74 @@ np.full():
 """
 
 # ACTUALLY BUILDING THE DATASET!!!
+
+# Date: 8/29/2026
+# Function: builds the dataset from the DREAMER data!
+
+def build_dataset(dreamer):
+
+    # create empty lists
+    all_windows = []
+    all_labels = []
+    all_participant_ids = []
+    all_trial_ids = []
+    all_window_ids = []
+
+    # creating filter
+    b, a = create_bandpass_filter()
+
+    # loop through every participant
+    for participant_id, participant in enumerate (dreamer.Data):
+
+        # determine number of trials
+        for trial_id in range (len(participant.EEG.stimuli)):
+
+            # get the EEG recorded during this trial/video
+            stimulus = participant.EEG.stimuli[trial_id]
+
+            # get the baseline EEG recorded before this trial/ivdeo
+            baseline = participant.EEG.baseline[trial_id]
+
+            # get this participant's emotional valence score for this trial
+            label = participant.ScoreValence[trial_id]
+
+            # correct baseline for the EEG
+            baseline_corrected = baseline_correct(stimulus, baseline)
+
+            # filter baseline-corrected EEG to 4-45 Hz (remove noise)
+            filtered = apply_bandpass_filter(baseline_corrected, b, a)
+
+            # add this trial to the dataset, calls function above
+            windows, labels, participant_ids, trial_ids, window_ids = (
+                add_trial_to_dataset (
+                    filtered,
+                    label,
+                    participant_id,
+                    trial_id
+                )
+            )
+
+            # append this trials' data to the lists
+            all_windows.append(windows)
+            all_labels.append(labels)
+            all_participant_ids.append(participant_ids)
+            all_trial_ids.append(trial_ids)
+            all_window_ids.append(window_ids)
+
+    # combine trials from ALL participants into one final dataset
+    X, y, participant_ids, trial_ids, window_ids = combine_trials(
+        all_windows,
+        all_labels,
+        all_participant_ids,
+        all_trial_ids,
+        all_window_ids
+    )
+
+    # return the completed dataset
+    return X, y, participant_ids, trial_ids, window_ids
+
+
+
+
+
+
