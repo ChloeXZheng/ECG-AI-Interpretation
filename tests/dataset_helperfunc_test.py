@@ -47,5 +47,3 @@ print("Labels:", labels.shape, labels.dtype)
 print("Participant IDs:", participant_ids.shape, participant_ids.dtype)
 print("Trial IDs:", trial_ids.shape, trial_ids.dtype)
 print("Window IDs:", window_ids.shape, window_ids.dtype)
-
-
