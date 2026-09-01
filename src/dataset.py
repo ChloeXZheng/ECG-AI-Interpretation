@@ -158,6 +158,29 @@ def build_dataset(dreamer):
 
 
 
+# Date: 9/1/2026
+# Function: saves the completed processed dataset to a file
+def save_dataset(X, y, participant_ids, trial_ids, window_ids, file_path):
 
+    # saves all five NumPy arrays into one compressed .npz file
+    # np.savez_compressed() is a built-in NumPy function that takes multiple NumPy arrays
+    # and saves them into a single compressed .npz file. 
+    np.savez_compressed(
+        
+        # file_path representts location and name of file
+        # for example, if you call "data/processed_dataset.npz":
+        # data/ = folder/location
+        # processed_dataset.npz = name of file
+        file_path,
 
+        # EEG windows
+        X=X,
 
+        # emotion/valence labels
+        y=y,
+
+        # metadata
+        participant_ids = participant_ids,
+        trial_ids = trial_ids,
+        window_ids = window_ids,
+    )

@@ -3,13 +3,16 @@
 
 import numpy as np
 from src.load_data import load_dreamer
-from src.dataset import build_dataset
+from src.dataset import build_dataset, save_dataset
 
 # load the data
 dreamer = load_dreamer('DREAMER.mat')
 
 # build dataset
 X, y, participant_ids, trial_ids, window_ids = build_dataset(dreamer)
+
+save_dataset(X, y, participant_ids, trial_ids, window_ids, "data/processed_dataset.npz")
+print("Dataset saved successfully!")
 
 # print & test
 print(X.shape)
@@ -23,13 +26,6 @@ print(np.unique(y, return_counts=True))
 print("Memory in MB:", X.nbytes / 1024**2)
 print("NaNs:", np.isnan(X).sum())
 
-print("Infinite values:", np.isinf(X).sum())
-print("Participants:", np.unique(participant_ids, return_counts=True))
-print("Trials:", np.unique(trial_ids, return_counts=True))
-print("Minimum EEG value:", X.min())
-print("Maximum EEG value:", X.max())
-print("Mean EEG value:", X.mean())
-print("Standard deviation:", X.std())
 print("Infinite values:", np.isinf(X).sum())
 print("Participants:", np.unique(participant_ids, return_counts=True))
 print("Trials:", np.unique(trial_ids, return_counts=True))
