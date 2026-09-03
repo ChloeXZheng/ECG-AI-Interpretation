@@ -1,3 +1,5 @@
 DREAMER.mat
-_pycache_/
+__pycache__/
 *.pyc
+data/processed_dataset.npz
+data/test_save.npz
