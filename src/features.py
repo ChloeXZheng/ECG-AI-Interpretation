@@ -1,3 +1,4 @@
+import numpy as np 
 # Date: 9/3/2026
 # Goal: Get all the features into numbers in one row, so we can actually do ML
 # [Mean, StDev, Theta power, Alpha power, Beta power, Gamma power]
@@ -21,9 +22,18 @@ def extract(channel_signal, sampling_rate = 128, welch_segment_seconds = 2):
 
     # create dictionaries for frequencies & later band_power
     FREQUENCY_BANDS = {
+
+        # appear during light sleep and REM dreaming, right as you
+        # drift off to sleep/wake up
         "theta": (4, 8),
+
+        # relaxed, wakeful states with closed eyes
         "alpha": (8, 13),
+
+        # awake, alert, and focused on active tasks
         "beta": (13, 30),
+
+        # deep focus, high-level problem solving, moments of sudden insight
         "gamma": (30, 45),
     }
 
@@ -47,6 +57,36 @@ def extract(channel_signal, sampling_rate = 128, welch_segment_seconds = 2):
 
     return band_power, mean, stdev
 
-def do_it_14_times():
-    
-    return 
+
+# Function: take one 4-second EEG window and turn all 14 channels into a single row
+# of 84 numerical features that a machine-learning model can use
+# Parameters: window = 4-second EEG window
+# sampling_rate = frequency of measurement
+
+def extract_window_features(window, sampling_rate = 128):
+
+    features = []
+
+    # establishes a range of 14 (because window.shape = (512, 14))
+    for channel in range (window.shape[1]):
+
+        channel_signal = window[:, channel]
+
+        band_power, mean, stdev = extract(channel_signal, sampling_rate = sampling_rate)
+
+        # puts all 6 features into the list
+        # repeats for each of the 14 EEG channels
+        features.extend([
+            mean, 
+            stdev,
+            band_power["theta"],
+            band_power["alpha"],
+            band_power["beta"],
+            band_power["gamma"]
+        ])
+
+    return np.array(features, dtype = np.float32)
+
+
+
+
