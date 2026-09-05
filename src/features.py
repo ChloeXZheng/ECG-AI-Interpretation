@@ -58,6 +58,7 @@ def extract(channel_signal, sampling_rate = 128, welch_segment_seconds = 2):
     return band_power, mean, stdev
 
 
+# Date: 9/3/2026
 # Function: take one 4-second EEG window and turn all 14 channels into a single row
 # of 84 numerical features that a machine-learning model can use
 # Parameters: window = 4-second EEG window
@@ -68,6 +69,7 @@ def extract_window_features(window, sampling_rate = 128):
     features = []
 
     # establishes a range of 14 (because window.shape = (512, 14))
+    # 512 samples every 4 seconds
     for channel in range (window.shape[1]):
 
         channel_signal = window[:, channel]
@@ -86,6 +88,44 @@ def extract_window_features(window, sampling_rate = 128):
         ])
 
     return np.array(features, dtype = np.float32)
+
+
+
+# Date: 9/4/2026
+# Function: go through every EEG window in X and turn each window into its 84 numerical features 
+# (all 21298 windows of 4-second EEG data)
+# Param: X = the EEG data; sampling_rate = frequency of measurement
+
+def extract_dataset_features(X, sampling_rate = 128):
+
+    # creating an empty list where we'll eventually put 84 features from each of the 21298 windows
+    all_features = []
+
+    for window in X:
+        features = extract_window_features(window, sampling_rate = sampling_rate)
+        all_features.append(features)
+
+
+    return np.array(all_features, dtype = np.float32)
+
+
+
+# Date: 9/4/2026
+# Function: save the feature matrix, so you don't have to run it over and over
+
+def save_features(dataset_features, y, participant_ids, trial_ids, window_ids, file_path):
+    np.savez_compressed(
+        file_path,
+        dataset_features = dataset_features,
+        y=y, 
+        participant_ids = participant_ids, 
+        trial_ids = trial_ids, 
+        window_ids = window_ids
+    )
+
+
+
+
 
 
 
