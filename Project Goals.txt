@@ -1,0 +1,10 @@
+GOAL: Create a model that can look at a window of EEG signals, and predict whether someone is:
+- valence
+- dominance
+- arousal
+
+Process 
+- process data
+- save processed dataset 
+- extract features
+- model

@@ -44,18 +44,21 @@ def add_trial_to_dataset(eeg, label, participant_id, trial_id, sampling_rate=128
     )
 
     # METADATA
+    # like who's being tested
     participant_ids = np.full(
         num_windows,
         participant_id,
         dtype=np.uint8
     )
 
+    # like which of the movies / clips it is
     trial_ids = np.full(
         num_windows,
         trial_id,
         dtype=np.uint8
     )
 
+    # like which window it is
     window_ids = np.arange(
         num_windows,
         dtype=np.uint16

@@ -112,7 +112,7 @@ def extract_dataset_features(X, sampling_rate = 128):
 
 # Date: 9/4/2026
 # Function: save the feature matrix, so you don't have to run it over and over
-
+# labels went into y
 def save_features(dataset_features, y, participant_ids, trial_ids, window_ids, file_path):
     np.savez_compressed(
         file_path,
