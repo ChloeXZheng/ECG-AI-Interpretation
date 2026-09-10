@@ -8,3 +8,12 @@ Process
 - save processed dataset 
 - extract features
 - model
+
+Model Training
+= Split by participant: reserve several whole participants as an untouched final test set.
+- Train baseline: standardize using training data only, then train logistic regression.
+- Evaluate: accuracy, balanced accuracy, macro-F1, MAE, confusion matrix; compare to ~24.6% majority baseline.
+- Add stronger models: random forest and gradient boosting.
+- Then try EEGNet: use the original raw EEG, train from scratch, and compare fairly using participant-level splits.
+- Save everything: preprocessing + models + metrics + experiment settings.
+- Analyze: determine which approach generalizes best to completely unseen people.
