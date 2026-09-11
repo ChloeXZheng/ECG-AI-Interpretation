@@ -71,8 +71,9 @@ from sklearn.linear_model import LogisticRegression
 
 # initialize model
 model = LogisticRegression(solver = 'newton-cholesky', max_iter=1000) 
-# max_iter 100: [8.44%, 12.31%, 51.12%, 20.31%, 21.91%]
-# max_iter 1000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+# lbfgs max_iter 100: [8.44%, 12.31%, 51.12%, 20.31%, 21.91%]
+# lbfgs max_iter 1000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+# switching to newton-cholesky -> singular / ill-conditioned Hessian, fell back to lbfgs
 
 # train it
 model.fit(X_train, y_train)
