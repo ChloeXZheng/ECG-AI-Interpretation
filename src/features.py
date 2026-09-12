@@ -49,7 +49,10 @@ def extract(channel_signal, sampling_rate = 128, welch_segment_seconds = 2):
     # looping through dictionary to sum up all the frequencies for each type of signal
     for band_name, (low_freq, high_freq) in FREQUENCY_BANDS.items():
         places_in_band = (frequencies >= low_freq) & (frequencies < high_freq)
-        band_power[band_name] = power[places_in_band].sum()
+        band_power[band_name] = np.trapezoid(
+        power[places_in_band],
+        frequencies[places_in_band]
+        )
 
     # getting the mean & stdev
     mean = channel_signal.mean()

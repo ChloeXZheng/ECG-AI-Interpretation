@@ -67,19 +67,63 @@ print(np.std(X_train_scaled, axis=0))
 
 ## --- TRAINING --- ##
 
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 
 # initialize model
-model = LogisticRegression(solver = 'newton-cholesky', max_iter=1000) 
+model = RandomForestClassifier(
+    n_estimators = 200,
+    random_state = 42, 
+    n_jobs = -1 # means use all available CPU cores
+)
 # lbfgs max_iter 100: [8.44%, 12.31%, 51.12%, 20.31%, 21.91%]
 # lbfgs max_iter 1000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+# lbfgs max_iter 10000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
 # switching to newton-cholesky -> singular / ill-conditioned Hessian, fell back to lbfgs
 
+print(model)
+
 # train it
-model.fit(X_train, y_train)
+model.fit(X_train, y_train) # RFC usually doesn't need scaling
 
 # test it
-y_pred = model.predict(X_test)
+y_pred = model.predict(X_test_scaled)
+
+print("Feature minimums:")
+print(np.min(X_train, axis=0))
+
+print("Feature maximums:")
+print(np.max(X_train, axis=0))
+
+print("\nTraining label counts:")
+for valence_score in range(1, 6):
+    print(
+        valence_score,
+        ":",
+        np.sum(y_train == valence_score)
+    )
+
+y_train_pred = model.predict(X_train_scaled)
+
+print("Training accuracy:", np.mean(y_train_pred == y_train))
+print("Testing accuracy:", np.mean(y_pred == y_test))
+
+print("\nPredicted label counts:")
+for valence_score in range(1, 6):
+    print(
+        valence_score,
+        ":",
+        np.sum(y_pred == valence_score)
+    )
+
+print("Overall accuracy:", np.mean(y_pred == y_test))
+
+print("\nTest label counts:")
+for valence_score in range(1, 6):
+    print(
+        valence_score,
+        ":",
+        np.sum(y_test == valence_score)
+    )
 
 # assess the test
 percent_correct = []
