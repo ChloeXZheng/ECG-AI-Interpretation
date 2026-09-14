@@ -1,0 +1,21 @@
+Trying to optimize the model
+
+(1) Logistic Regression + Scaled Data
+Solver: LBFGS
+max_iter 100: [8.44%, 12.31%, 51.12%, 20.31%, 21.91%]
+max_iter 1000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+max_iter 10000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+
+Solver: Newton-Cholesky
+singular / ill-conditioned Hessian, fell back to lbfgs
+
+(2) Random Forest Classifier, no Data Scaling
+Default: random_state = 42 ; n_jobs = -1
+[1, 2, 3, 4, 5], training accuracy, testing accuracy
+
+Isolating n_estimators (# of trees):
+n_extimators = 100: [17.08%, 50.25%, 19.66%, 32.76%, 8.88%] ; 100% ; 25.68%
+n_estimators = 200: [14.43%, 47.08%, 21.35%, 32.60%, 8.31%] ; 100% ; 24.67%
+n_extimators = 500: [14.62%, 49.62%, 20.79%, 32.10%, 10.79%] ; 100% ; 25.40%
+
+Isolating 

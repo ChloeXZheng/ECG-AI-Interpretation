@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 # Date: 9/8/2026
 # Function: Actual training!
 
+
+
 ## --- EXTRACT DATA, SPLITTING BY PARTICIPANTS ---  ##
 # load saved data into train.py
 data = np.load("data/processed_features.npz")
@@ -19,6 +21,8 @@ participant_ids = data["participant_ids"]
 
 # save array of unique participants
 unique_participants = np.unique(participant_ids)
+
+
 
 ## --- MASKING TO TEST TRAINING MODEL --- ##
 # partition the unique participants into training and testing sets
@@ -66,21 +70,17 @@ print(np.mean(X_train_scaled, axis=0))
 print(np.std(X_train_scaled, axis=0))
 """
 
-## --- TRAINING --- ##
 
+
+## --- TRAINING --- ##
 from sklearn.ensemble import RandomForestClassifier
 
 # initialize model
 model = RandomForestClassifier(
-    n_estimators = 200,
+    n_estimators = 500,
     random_state = 42, 
     n_jobs = -1 # means use all available CPU cores
 )
-# logistic regression solver lbfgs max_iter 100: [8.44%, 12.31%, 51.12%, 20.31%, 21.91%]
-# logistic regression solver lbfgs max_iter 1000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
-# logistic regression solver lbfgs max_iter 10000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
-# logistic regression switching to newton-cholesky solver -> singular / ill-conditioned Hessian, fell back to lbfgs
-# switched models to RandomForestClassifier + undid scaling: [14.43%, 47.08%, 21.35%, 32.60%, 8.31%]
 
 # train model on the training data
 model.fit(X_train, y_train) # RFC usually doesn't need scaling
@@ -97,7 +97,6 @@ for valence_score in range(1, 6):
 
 
 ## --- TESTING: Training data --- ##
-
 # checking how well the model performs, on the data it was performed on
 y_train_pred = model.predict(X_train)
 
@@ -107,7 +106,6 @@ print("Training accuracy:", np.mean(y_train_pred == y_train))
 
 
 ## --- TESTING: Testing data --- ##
-
 # use model to predict labels for eeg testing data
 y_pred = model.predict(X_test)
 
@@ -135,7 +133,6 @@ for valence_score in range(1, 6):
 
 
 ## --- ASSESS THE MODEL'S PREDICTIONS OF THE TEST --- ## 
-
 # percentage correct, based on valence scores.
 print("Percentage Correct by Score")
 for valence_score in range (1, 6):
