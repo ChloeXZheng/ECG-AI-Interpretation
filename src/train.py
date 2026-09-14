@@ -51,6 +51,7 @@ print("y_train shape:", y_train.shape) # (16668,)
 print("y_test shape:", y_test.shape) # (4630,)
 """
 
+"""
 ## --- SCALING DATA --- ##
 # not using test data to scale bc then that'd leak the test data. only using train, then applying scaling parameters to test
 # scaling because of really low accuracy in training. but scaling didn't change anything...
@@ -63,7 +64,7 @@ X_test_scaled = scaler.transform(X_test) # use prev parameters to train X_test
 
 print(np.mean(X_train_scaled, axis=0))
 print(np.std(X_train_scaled, axis=0))
-
+"""
 
 ## --- TRAINING --- ##
 
@@ -75,25 +76,16 @@ model = RandomForestClassifier(
     random_state = 42, 
     n_jobs = -1 # means use all available CPU cores
 )
-# lbfgs max_iter 100: [8.44%, 12.31%, 51.12%, 20.31%, 21.91%]
-# lbfgs max_iter 1000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
-# lbfgs max_iter 10000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
-# switching to newton-cholesky -> singular / ill-conditioned Hessian, fell back to lbfgs
+# logistic regression solver lbfgs max_iter 100: [8.44%, 12.31%, 51.12%, 20.31%, 21.91%]
+# logistic regression solver lbfgs max_iter 1000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+# logistic regression solver lbfgs max_iter 10000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+# logistic regression switching to newton-cholesky solver -> singular / ill-conditioned Hessian, fell back to lbfgs
+# switched models to RandomForestClassifier + undid scaling: [14.43%, 47.08%, 21.35%, 32.60%, 8.31%]
 
-print(model)
-
-# train it
+# train model on the training data
 model.fit(X_train, y_train) # RFC usually doesn't need scaling
 
-# test it
-y_pred = model.predict(X_test_scaled)
-
-print("Feature minimums:")
-print(np.min(X_train, axis=0))
-
-print("Feature maximums:")
-print(np.max(X_train, axis=0))
-
+# training label counts
 print("\nTraining label counts:")
 for valence_score in range(1, 6):
     print(
@@ -102,11 +94,27 @@ for valence_score in range(1, 6):
         np.sum(y_train == valence_score)
     )
 
-y_train_pred = model.predict(X_train_scaled)
 
+
+## --- TESTING: Training data --- ##
+
+# checking how well the model performs, on the data it was performed on
+y_train_pred = model.predict(X_train)
+
+# print out the accuracy of the training data, and the testing data
 print("Training accuracy:", np.mean(y_train_pred == y_train))
+
+
+
+## --- TESTING: Testing data --- ##
+
+# use model to predict labels for eeg testing data
+y_pred = model.predict(X_test)
+
+# printing prediction accuracy
 print("Testing accuracy:", np.mean(y_pred == y_test))
 
+# PREDICTED distribution of labels (1-5)
 print("\nPredicted label counts:")
 for valence_score in range(1, 6):
     print(
@@ -115,8 +123,7 @@ for valence_score in range(1, 6):
         np.sum(y_pred == valence_score)
     )
 
-print("Overall accuracy:", np.mean(y_pred == y_test))
-
+# REAL distribution of labels (1-5)
 print("\nTest label counts:")
 for valence_score in range(1, 6):
     print(
@@ -125,8 +132,12 @@ for valence_score in range(1, 6):
         np.sum(y_test == valence_score)
     )
 
-# assess the test
-percent_correct = []
+
+
+## --- ASSESS THE MODEL'S PREDICTIONS OF THE TEST --- ## 
+
+# percentage correct, based on valence scores.
+print("Percentage Correct by Score")
 for valence_score in range (1, 6):
     # make masks
     y_test_mask = np.isin(y_test, valence_score)
@@ -137,6 +148,17 @@ for valence_score in range (1, 6):
     correct_sum = np.sum(correct)
 
     # calculate
-    percent_correct.append(correct_sum / y_test_sum)
+    print(valence_score, ": ", (correct_sum / y_test_sum)*100, "%")
 
-print(percent_correct)
+# overall percentage correct
+print("Overall accuracy:", np.mean(y_pred == y_test)*100, "%")
+
+"""
+# mins & max
+# for reference to understand the current range / whether it needs to be scaled
+print("Feature minimums:")
+print(np.min(X_train, axis=0))
+
+print("Feature maximums:")
+print(np.max(X_train, axis=0))
+"""
