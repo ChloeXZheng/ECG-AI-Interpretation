@@ -54,11 +54,20 @@ def extract(channel_signal, sampling_rate = 128, welch_segment_seconds = 2):
         frequencies[places_in_band]
         )
 
+    # calculate the total power across all frequency bands
+    total_band_power = sum(band_power.values())
+
+    # calculate the fraction of total power for each frequency band
+    relative_band_power = {}
+
+    for band_name, power in band_power.items():
+        relative_band_power[band_name] = power / total_band_power
+
     # getting the mean & stdev
     mean = channel_signal.mean()
     stdev = channel_signal.std()
 
-    return band_power, mean, stdev
+    return relative_band_power, mean, stdev
 
 
 # Date: 9/3/2026

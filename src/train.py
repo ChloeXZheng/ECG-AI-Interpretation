@@ -78,6 +78,7 @@ from sklearn.ensemble import RandomForestClassifier
 # initialize model
 model = RandomForestClassifier(
     n_estimators = 500,
+    min_samples_leaf = 20,
     random_state = 42, 
     n_jobs = -1 # means use all available CPU cores
 )

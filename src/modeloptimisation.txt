@@ -18,4 +18,20 @@ n_extimators = 100: [17.08%, 50.25%, 19.66%, 32.76%, 8.88%] ; 100% ; 25.68%
 n_estimators = 200: [14.43%, 47.08%, 21.35%, 32.60%, 8.31%] ; 100% ; 24.67%
 n_extimators = 500: [14.62%, 49.62%, 20.79%, 32.10%, 10.79%] ; 100% ; 25.40%
 
-Isolating 
+Isolating max_depth (how deep each decision tree can grow)
+max_depth = 1: [4.22%, 0.0%, 0.0%, 100.0%, 0.0%]; 25.28%, 27.30%
+max_depth = 3: [3.04%, 3.30%, 0.0%,  95.50%, 0.0%]; 32.85%; 26.41%
+max_depth = 5: [14.72%, 50.89%, 21.35%, 33.42%, 9.78%]; 100%; 25.87%
+max_depth = 10: [17.37%, 42.26%, 16.29%, 38.57%, 7.09%]; 74.65%, 25.05%
+
+Isolating min_samples_leaf (don't make a leaf containing fewer than _ training examples; forces tree to make more general rules instead of memorizing indiviudal examples)
+min_samples_leaf = 5: [14.23%, 50.63%, 16.99%, 32.92%, 10.90%]; 98.5%; 25.14%
+min_samples_leaf = 10: [19.43%, 47.08%, 17.13%, 33.58%, 12.70%]; 93.51%; 26.22%
+min_samples_leaf = 20: [18.94%, 44.92%, 17.13%, 33.58%, 11.01%]; 85.48%; 25.42%
+
+Changed band power to relative band power:
+RFC; n_estimators = 500,
+    min_samples_leaf = 20,
+    random_state = 42, 
+    n_jobs = -1 # means use all available CPU cores
+[19.73%, 20.57%, 21.21%, 36.86%, 14.04%]; 83.28%; 25.05%
