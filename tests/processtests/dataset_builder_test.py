@@ -2,8 +2,8 @@
 # Function: testing the build_dataset func
 
 import numpy as np
-from src.load_data import load_dreamer
-from src.dataset import build_dataset, save_dataset
+from dataprocessing.load_data import load_dreamer
+from dataprocessing.dataset import build_dataset, save_dataset
 
 # load the data
 dreamer = load_dreamer('DREAMER.mat')

@@ -1,7 +1,7 @@
 import numpy as np
-from src.load_data import load_dreamer
-from src.dataset import build_dataset
-from src.features import extract_window_features, extract_dataset_features, save_features
+from dataprocessing.load_data import load_dreamer
+from dataprocessing.dataset import build_dataset
+from dataprocessing.features import extract_window_features, extract_dataset_features, save_features
 
 dreamer = load_dreamer("DREAMER.mat")
 

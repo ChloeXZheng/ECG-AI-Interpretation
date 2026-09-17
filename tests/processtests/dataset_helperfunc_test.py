@@ -1,13 +1,13 @@
 # Date: 8/28/2026
 # Function: test helper functions in dataset.py with single trial/participant b4 making bigger function
 
-from src.load_data import load_dreamer
-from src.preprocess import (
+from dataprocessing.load_data import load_dreamer
+from dataprocessing.preprocess import (
     baseline_correct, 
     create_bandpass_filter, 
     apply_bandpass_filter
 )
-from src.dataset import add_trial_to_dataset
+from dataprocessing.dataset import add_trial_to_dataset
 
 # load the data
 dreamer = load_dreamer('DREAMER.mat')

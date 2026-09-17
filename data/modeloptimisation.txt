@@ -1,0 +1,137 @@
+Trying to optimize the model
+
+(1) Logistic Regression + Scaled Data
+Solver: LBFGS
+max_iter 100: [8.44%, 12.31%, 51.12%, 20.31%, 21.91%]
+max_iter 1000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+max_iter 10000: [4.61%, 0.13%, 66.57%, 43.57%, 3.71%]
+
+Solver: Newton-Cholesky
+singular / ill-conditioned Hessian, fell back to lbfgs
+
+(2) Random Forest Classifier, no Data Scaling
+Default: random_state = 42 ; n_jobs = -1
+[1, 2, 3, 4, 5], training accuracy, testing accuracy
+
+Isolating n_estimators (# of trees):
+n_extimators = 100: [17.08%, 50.25%, 19.66%, 32.76%, 8.88%] ; 100% ; 25.68%
+n_estimators = 200: [14.43%, 47.08%, 21.35%, 32.60%, 8.31%] ; 100% ; 24.67%
+n_extimators = 500: [14.62%, 49.62%, 20.79%, 32.10%, 10.79%] ; 100% ; 25.40%
+
+Isolating max_depth (how deep each decision tree can grow)
+max_depth = 1: [4.22%, 0.0%, 0.0%, 100.0%, 0.0%]; 25.28%, 27.30%
+max_depth = 3: [3.04%, 3.30%, 0.0%,  95.50%, 0.0%]; 32.85%; 26.41%
+max_depth = 5: [14.72%, 50.89%, 21.35%, 33.42%, 9.78%]; 100%; 25.87%
+max_depth = 10: [17.37%, 42.26%, 16.29%, 38.57%, 7.09%]; 74.65%, 25.05%
+
+Isolating min_samples_leaf (don't make a leaf containing fewer than _ training examples; forces tree to make more general rules instead of memorizing indiviudal examples)
+min_samples_leaf = 5: [14.23%, 50.63%, 16.99%, 32.92%, 10.90%]; 98.5%; 25.14%
+min_samples_leaf = 10: [19.43%, 47.08%, 17.13%, 33.58%, 12.70%]; 93.51%; 26.22%
+min_samples_leaf = 20: [18.94%, 44.92%, 17.13%, 33.58%, 11.01%]; 85.48%; 25.42%
+
+Changed band power to relative band power:
+RFC; n_estimators = 500,
+    min_samples_leaf = 20,
+    random_state = 42, 
+    n_jobs = -1 # means use all available CPU cores
+[19.73%, 20.57%, 21.21%, 36.86%, 14.04%]; 83.28%; 25.05%
+
+Confusion Matrix with above: tests\trainconfusionmatrix.py - 9.16.26
+actual ↓ / predicted →	
+    1	2	3	4	5
+1	199	206	123	427	64
+2	115	231	88	303	51
+3	197	154	153	160	48
+4	160	279	168	459	155
+5	133	152	107	375	123
+
+(3) Binary Experiment - just testing stuff - 9.16.26
+original label 1 → low (0)
+original label 2 → low (0)
+original label 3 → removed
+original label 4 → high (1)
+original label 5 → high (1)
+
+src\trainbinary.py
+Binary training accuracy: 0.918488160291439
+Binary testing accuracy: 0.5839714139867279
+Dummy testing accuracy: 0.5387953037263911 (RF only 4.5% better than dummy...)
+
+Random Forest classification report:
+              precision    recall  f1-score   support
+
+           0       0.54      0.72      0.61      1807
+           1       0.66      0.47      0.55      2111
+
+    accuracy                           0.58      3918
+   macro avg       0.60      0.59      0.58      3918
+weighted avg       0.60      0.58      0.58      3918
+
+
+participant, # of labels, # of low, # of high - src\trainarchives\trainbinary.py
+0 total: 926 low: 322 high: 436
+1 total: 926 low: 535 high: 296
+2 total: 926 low: 239 high: 453
+3 total: 926 low: 420 high: 216
+4 total: 926 low: 351 high: 345
+5 total: 926 low: 328 high: 424
+6 total: 926 low: 499 high: 320
+7 total: 926 low: 247 high: 314
+8 total: 926 low: 204 high: 410
+9 total: 926 low: 240 high: 577
+10 total: 926 low: 425 high: 330
+11 total: 926 low: 291 high: 474
+12 total: 926 low: 261 high: 522
+13 total: 926 low: 281 high: 412
+14 total: 926 low: 388 high: 320
+15 total: 926 low: 540 high: 344
+16 total: 926 low: 473 high: 328
+17 total: 926 low: 501 high: 344
+18 total: 926 low: 266 high: 487
+19 total: 926 low: 446 high: 306
+20 total: 926 low: 406 high: 347
+21 total: 926 low: 239 high: 341
+22 total: 926 low: 420 high: 426
+
+GroupKFold - tests\traingroupkfold.py
+--- Fold 1 ---
+Training participants: [ 0  2  3  6  7  9 10 11 12 13 14 15 17 18 19 20 21 22]
+Testing participants: [ 1  4  5  8 16]
+Testing accuracy: 0.5538711423930699
+
+--- Fold 2 ---
+Training participants: [ 0  1  2  3  4  5  6  7  8  9 10 11 12 16 17 19 20 21 22]
+Testing participants: [13 14 15 18]
+Testing accuracy: 0.5875576036866359
+
+--- Fold 3 ---
+Training participants: [ 1  2  3  4  5  8 10 11 12 13 14 15 16 17 18 19 20 21]
+Testing participants: [ 0  6  7  9 22]
+Testing accuracy: 0.48171533806892924
+
+--- Fold 4 ---
+Training participants: [ 0  1  4  5  6  7  8  9 10 11 12 13 14 15 16 18 19 22]
+Testing participants: [ 2  3 17 20 21]
+Testing accuracy: 0.6152310325156874
+
+--- Fold 5 ---
+Training participants: [ 0  1  2  3  4  5  6  7  8  9 13 14 15 16 17 18 20 21 22]
+Testing participants: [10 11 12 19]
+Testing accuracy: 0.6078559738134206
+
+Fold accuracies:
+[0.5538711423930699, 0.5875576036866359, 0.48171533806892924, 0.6152310325156874, 0.6078559738134206]
+Mean accuracy: 0.5692462180955487
+Standard deviation: 0.048659369390088116
+
+Dummy testing accuracy: 0.5342062193126023
+
+Random Forest classification report:
+              precision    recall  f1-score   support
+
+           0       0.62      0.42      0.50      1423
+           1       0.60      0.77      0.68      1632
+
+    accuracy                           0.61      3055
+   macro avg       0.61      0.60      0.59      3055
+weighted avg       0.61      0.61      0.59      3055
