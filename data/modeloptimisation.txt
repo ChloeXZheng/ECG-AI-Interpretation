@@ -135,3 +135,53 @@ Random Forest classification report:
     accuracy                           0.61      3055
    macro avg       0.61      0.60      0.59      3055
 weighted avg       0.61      0.61      0.59      3055
+
+
+
+
+
+9/18/26
+After splitting into 3 groups: 1&2 = 0, 3=1, 4&5 = 2:
+    Training accuracy: 0.8443124550035997
+    Testing accuracy: 0.5138228941684665
+
+    Actual vs Predicted:
+    Actual Low (1/2): 1807
+    Actual Neutral (3): 712
+    Actual High (4/5): 2111
+    Predicted Low (1/2): 2776
+    Predicted Neutral (3): 50
+    Predicted High (4/5): 1804
+
+Basing on mean only: 
+    Original feature shape: (16668, 84)
+    Mean-only feature shape: (16668, 14)
+    Training accuracy: 0.7060835133189345
+    Testing accuracy: 0.4021598272138229
+
+Basing on standard deviation only:
+    Original feature shape: (16668, 84)
+    StDev-only feature shape: (16668, 14)
+    Training accuracy: 0.832013438924886
+    Testing accuracy: 0.45442764578833694
+
+Based on frequency only (theta, alpha, beta, gamma):
+    Original feature shape: (16668, 84)
+    Frequency-only feature shape: (16668, 56)
+    Training accuracy: 0.7948164146868251
+    Testing accuracy: 0.4447084233261339
+
+Trying combos:
+    Feature shape: (16668, 28)
+    Training accuracy: 0.8290736741060715
+    Testing accuracy: 0.45961123110151186
+
+    --- Mean + Frequency ---
+    Feature shape: (16668, 70)
+    Training accuracy: 0.798896088312935
+    Testing accuracy: 0.44168466522678185
+
+    --- StDev + Frequency ---
+    Feature shape: (16668, 70)
+    Training accuracy: 0.8441924646028318
+    Testing accuracy: 0.5155507559395248

@@ -69,6 +69,20 @@ def make_binary_data(X, y, participant_ids):
     return X_binary, y_binary, participant_ids_binary
 
 
+## --- MAKE 3-CLASS DATA --- ##
+def make_three_class_data(X, y, participant_ids):
+
+    # make the three classes:
+    # 1, 2 → 0 (low)
+    # 3    → 1 (neutral)
+    # 4, 5 → 2 (high)
+    y_three_class = np.where(
+        y <= 2, 0,
+        np.where(y == 3, 1, 2)
+    )
+
+    return X, y_three_class, participant_ids
+
 ## --- FITTING AND TRAINING DATA FROM MODEL --- ##
 # parameters: model is model of choice - need to define params of that beforehand
 #             rest is just data from training & testing separation
