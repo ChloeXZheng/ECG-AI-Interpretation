@@ -1,6 +1,20 @@
 # date: 9/16/2026
 # Function: to make actual functions for the training so its not... really messy
 
+import numpy as np
+
+from sklearn.model_selection import train_test_split, StratifiedGroupKFold
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    balanced_accuracy_score,
+    confusion_matrix,
+    classification_report
+)
+from sklearn.dummy import DummyClassifier
+from sklearn.base import clone
+
 ## --- LOAD PROCESSED DATA --- ##
 # parameter: file_path = "data/processed_features.npz"
 def load_processed_data(file_path):
@@ -13,9 +27,6 @@ def load_processed_data(file_path):
     return X, y, participant_ids
 
 ## --- SPLITTING PARTICIPANTS INTO TEST & TRAIN --- ##
-import numpy as np
-from sklearn.model_selection import train_test_split
-
 def split_by_participant(X, y, participant_ids, test_size=0.2, random_state=42):
     unique_participants = np.unique(participant_ids)
 
@@ -41,13 +52,11 @@ def split_by_participant(X, y, participant_ids, test_size=0.2, random_state=42):
 
 
 ## --- SCALING DATA --- ##
-from sklearn.preprocessing import StandardScaler
-
 def scale_data(X_train, X_test):
     scaler = StandardScaler() # create object
 
     X_train_scaled = scaler.fit_transform(X_train) # fit & create parameters, then train X_train
-    X_test_scaled = scaler.transform(X_test) # use prev parameters to train X_test
+    X_test_scaled = scaler.transform(X_test) # use parameters learned from X_train
 
     return X_train_scaled, X_test_scaled, scaler
 
@@ -83,6 +92,7 @@ def make_three_class_data(X, y, participant_ids):
 
     return X, y_three_class, participant_ids
 
+
 ## --- FITTING AND TRAINING DATA FROM MODEL --- ##
 # parameters: model is model of choice - need to define params of that beforehand
 #             rest is just data from training & testing separation
@@ -94,15 +104,155 @@ def train_and_test_model(model, X_train, y_train, X_test, y_test):
     y_train_pred = model.predict(X_train)
     y_test_pred = model.predict(X_test)
 
-    # calculate accuracy
-    train_accuracy = np.mean(y_train_pred == y_train)
-    test_accuracy = np.mean(y_test_pred == y_test)
-
+    # training accuracy
+    train_accuracy = accuracy_score(y_train, y_train_pred)
     print("Training accuracy:", train_accuracy)
-    print("Testing accuracy:", test_accuracy)
 
-    return model, y_train_pred, y_test_pred
+    # evaluate testing predictions
+    results = evaluate_model(y_test, y_test_pred)
 
+    return model, y_train_pred, y_test_pred, results
+
+
+## --- EVALUATE MODEL --- ##
+# Function: Evaluate model predictions.
+# Parameters: y_test: actual labels
+#            y_pred: predicted labels
+# Returns: dictionary containing evaluation metrics
+def evaluate_model(y_test, y_pred):
+
+    accuracy = accuracy_score(y_test, y_pred)
+    macro_f1 = f1_score(y_test, y_pred, average="macro")
+    balanced_accuracy = balanced_accuracy_score(y_test, y_pred)
+    confusion = confusion_matrix(y_test, y_pred)
+
+    print("Testing accuracy:", accuracy)
+    print("Macro F1:", macro_f1)
+    print("Balanced accuracy:", balanced_accuracy)
+
+    print("\nConfusion Matrix:")
+    print(confusion)
+
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
+
+    return {
+        "accuracy": accuracy,
+        "macro_f1": macro_f1,
+        "balanced_accuracy": balanced_accuracy,
+        "confusion_matrix": confusion
+    }
+
+
+## --- DUMMY CLASSIFIER --- ##
+# the dummy training part + accuracy
+def dummy_baseline(X_train, y_train, X_test, y_test):
+    dummy = DummyClassifier(strategy="most_frequent")
+
+    dummy.fit(X_train, y_train)
+    dummy_pred = dummy.predict(X_test)
+
+    print("Dummy baseline:")
+    results = evaluate_model(y_test, dummy_pred)
+
+    return dummy, dummy_pred, results
+
+
+## --- PARTICIPANT-LEVEL CROSS-VALIDATION --- ##
+def evaluate_stratified_group_cv(model, X, y, participant_ids, n_splits=5, random_state=42):
+
+    cv = StratifiedGroupKFold(
+        n_splits=n_splits,
+        shuffle=True,
+        random_state=random_state
+    )
+
+    fold_results = []
+
+    for fold, (train_idx, test_idx) in enumerate(
+        cv.split(X, y, groups=participant_ids),
+        start=1
+    ):
+
+        # split data using participant indices
+        X_train = X[train_idx]
+        X_test = X[test_idx]
+        y_train = y[train_idx]
+        y_test = y[test_idx]
+
+        # make a fresh copy of the model for this fold
+        fold_model = clone(model)
+
+        # train model
+        fold_model.fit(X_train, y_train)
+
+        # predict test data
+        y_pred = fold_model.predict(X_test)
+
+        # calculate metrics
+        accuracy = accuracy_score(y_test, y_pred)
+        macro_f1 = f1_score(y_test, y_pred, average="macro")
+        balanced_accuracy = balanced_accuracy_score(y_test, y_pred)
+
+        fold_results.append({
+            "accuracy": accuracy,
+            "macro_f1": macro_f1,
+            "balanced_accuracy": balanced_accuracy
+        })
+
+        print(f"Fold {fold}:")
+        print("  Accuracy:", accuracy)
+        print("  Macro F1:", macro_f1)
+        print("  Balanced accuracy:", balanced_accuracy)
+        print()
+
+    # calculate mean and standard deviation across folds
+    mean_accuracy = np.mean(
+        [result["accuracy"] for result in fold_results]
+    )
+    std_accuracy = np.std(
+        [result["accuracy"] for result in fold_results]
+    )
+
+    mean_macro_f1 = np.mean(
+        [result["macro_f1"] for result in fold_results]
+    )
+    std_macro_f1 = np.std(
+        [result["macro_f1"] for result in fold_results]
+    )
+
+    mean_balanced_accuracy = np.mean(
+        [result["balanced_accuracy"] for result in fold_results]
+    )
+    std_balanced_accuracy = np.std(
+        [result["balanced_accuracy"] for result in fold_results]
+    )
+
+    print("Cross-validation results:")
+    print(f"Accuracy: {mean_accuracy:.4f} ± {std_accuracy:.4f}")
+    print(f"Macro F1: {mean_macro_f1:.4f} ± {std_macro_f1:.4f}")
+    print(
+        f"Balanced accuracy: "
+        f"{mean_balanced_accuracy:.4f} ± {std_balanced_accuracy:.4f}"
+    )
+
+    return {
+        "fold_results": fold_results,
+        "mean_accuracy": mean_accuracy,
+        "std_accuracy": std_accuracy,
+        "mean_macro_f1": mean_macro_f1,
+        "std_macro_f1": std_macro_f1,
+        "mean_balanced_accuracy": mean_balanced_accuracy,
+        "std_balanced_accuracy": std_balanced_accuracy
+    }
+
+
+"""
+Archived code:
+
+# the classification report
+def print_dummy_classification_report(y_test, y_pred):
+    print(classification_report(y_test, y_pred))
 
 ## --- EMOTION SCORE COUNTS --- ##
 def print_label_counts(y, label):
@@ -135,25 +285,4 @@ def pred_label_accuracy(y_test, y_pred):
 
     # overall percentage correct
     print("Overall accuracy:", np.mean(y_pred == y_test)*100, "%")
-
-
-## --- DUMMY CLASSIFIER --- ##
-from sklearn.dummy import DummyClassifier
-from sklearn.metrics import accuracy_score, classification_report
-
-# the dummy training part + accuracy
-def dummy_baseline(X_train, y_train, X_test, y_test):
-    dummy = DummyClassifier(strategy="most_frequent")
-
-    dummy.fit(X_train, y_train)
-    dummy_pred = dummy.predict(X_test)
-
-    dummy_accuracy = accuracy_score(y_test, dummy_pred)
-
-    print("Dummy testing accuracy:", dummy_accuracy)
-
-    return dummy, dummy_pred, dummy_accuracy
-
-# the classification report
-def print_classification_report(y_test, y_pred):
-    print(classification_report(y_test, y_pred))
+"""

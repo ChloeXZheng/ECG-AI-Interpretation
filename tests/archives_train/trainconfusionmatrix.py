@@ -1,4 +1,4 @@
-import src.train as tf
+import trainarchives.trainnew as tf
 
 from sklearn.metrics import ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
