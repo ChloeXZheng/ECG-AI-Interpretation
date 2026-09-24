@@ -12,7 +12,7 @@ def get_next_experiment_id(workbook):
     highest_number = 0
     # Skip the header row
     for row in experiment_sheet.iter_rows(
-        min_row=2,
+        min_row=1,
         values_only=True
     ):
         experiment_id = row[0]

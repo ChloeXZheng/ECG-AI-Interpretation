@@ -1,3 +1,22 @@
+Description of excel sheet:
+    Experiment_log: 
+        Fold = 5 groups of participants
+        Mean accuracy = average % accuracy across 5 folds
+        Mean balanced accuracy: average accuracy of each class recall
+            Recall: (correctly predicted class examples)/(all actual examples of that class)
+        Mean F1: combines precision and recall
+            Recall: Of the actual Neutral examples, how many did I find?
+            Precision: Of everything I called Neutral, how many were actually Neutral?
+            F1 = 2(precision * recall)/(precision + recall)
+    
+    Fold_results:
+        Results from the 5 individual cross validation folds
+
+ 
+
+
+
+
 Trying to optimize the model
 
 (1) Logistic Regression + Scaled Data
