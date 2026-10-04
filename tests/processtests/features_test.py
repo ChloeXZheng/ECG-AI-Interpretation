@@ -14,7 +14,7 @@ window_features = extract_window_features(window)
 print("Original window shape:", window.shape)
 print("Features shape:", window_features.shape)
 print("Features dtype:", window_features.dtype)
-print("Features:", window_features)
+print("First 10 features:", window_features[:10])
 
 dataset_features = extract_dataset_features(X)
 
@@ -23,12 +23,12 @@ print("Dataset features dtype:", dataset_features.dtype)
 
 
 save_features(
-    dataset_features,
+  dataset_features,
     y,
     participant_ids,
     trial_ids,
     window_ids,
-    "data/processed_features.npz"
+  "data/processed_features.npz"
 )
 
 print("FEATURES SAVED!")

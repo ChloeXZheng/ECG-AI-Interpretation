@@ -28,12 +28,12 @@ X, y, participant_ids = tf.make_binary_data(
 ## --- MODELS --- ##
 
 models_to_test = {
-    "dummy": models.dummy(),
-    "logistic_regression": models.logistic_regression(),
-    "lda": models.lda(),
-    "linear_svm": models.linear_svm(),
-    "rbf_svm": models.rbf_svm(),
-    "random_forest": models.random_forest(),
+    # "dummy": models.dummy(),
+    # "logistic_regression": models.logistic_regression(),
+    # "lda": models.lda(),
+    # "linear_svm": models.linear_svm(),
+    # "rbf_svm": models.rbf_svm(),
+    # "random_forest": models.random_forest(),
     "gradient_boosting": models.gradient_boosting()
 }
 
@@ -61,7 +61,7 @@ for number, (name, model) in enumerate(
     results.log_experiment(
         file_path="data/model_results.xlsx",
         task="binary",
-        features="all 84",
+        features="all 140",
         model_name=name,
         results=cv_results
     )

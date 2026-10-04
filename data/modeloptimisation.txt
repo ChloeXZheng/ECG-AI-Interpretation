@@ -204,3 +204,9 @@ Trying combos:
     Feature shape: (16668, 70)
     Training accuracy: 0.8441924646028318
     Testing accuracy: 0.5155507559395248
+
+
+Best model for each task (based on model_results.xlsx):
+    binary: gradient
+    5 class: rbf_svm
+    3 class: linear_svm

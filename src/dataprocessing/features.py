@@ -1,11 +1,12 @@
 import numpy as np 
 # Date: 9/3/2026
 # Goal: Get all the features into numbers in one row, so we can actually do ML
-# [Mean, StDev, Theta power, Alpha power, Beta power, Gamma power]
+# [Mean, StDev, Theta power, Alpha power, Beta power, Gamma power,
+# Theta/Alpha, Theta/Beta, Alpha/Beta, Beta/Gamma]
+# 10 features x 14 channels = 140 numbers per window
 # Mean = avg signal level, stdv = how much it fluctuates
 # STRENGTH of: theta = 4-8 ; alpha = 8-13 ; beta = 13-30 ; gamma = 30-45
 # aka how much of each in the window
-# 6 features x 14 channels = 84 numbers per window
 
 # flow:
 # extract those features
@@ -59,15 +60,21 @@ def extract(channel_signal, sampling_rate = 128, welch_segment_seconds = 2):
 
     # calculate the fraction of total power for each frequency band
     relative_band_power = {}
-
     for band_name, power in band_power.items():
         relative_band_power[band_name] = power / total_band_power
 
-    # getting the mean & stdev
+    # Band-power ratios
+    band_ratios = {
+        "theta_alpha": relative_band_power["theta"] / relative_band_power["alpha"],
+        "theta_beta": relative_band_power["theta"] / relative_band_power["beta"],
+        "alpha_beta": relative_band_power["alpha"] / relative_band_power["beta"],
+        "beta_gamma": relative_band_power["beta"] / relative_band_power["gamma"]
+    }
+
     mean = channel_signal.mean()
     stdev = channel_signal.std()
 
-    return relative_band_power, mean, stdev
+    return relative_band_power, band_ratios, mean, stdev
 
 
 # Date: 9/3/2026
@@ -86,7 +93,7 @@ def extract_window_features(window, sampling_rate = 128):
 
         channel_signal = window[:, channel]
 
-        band_power, mean, stdev = extract(channel_signal, sampling_rate = sampling_rate)
+        band_power, band_ratios, mean, stdev = extract(channel_signal, sampling_rate = sampling_rate)
 
         # puts all 6 features into the list
         # repeats for each of the 14 EEG channels
@@ -96,7 +103,13 @@ def extract_window_features(window, sampling_rate = 128):
             band_power["theta"],
             band_power["alpha"],
             band_power["beta"],
-            band_power["gamma"]
+            band_power["gamma"],
+
+             # Band-power ratios
+            band_ratios["theta_alpha"],
+            band_ratios["theta_beta"],
+            band_ratios["alpha_beta"],
+            band_ratios["beta_gamma"]
         ])
 
     return np.array(features, dtype = np.float32)
