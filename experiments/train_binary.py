@@ -33,8 +33,8 @@ models_to_test = {
     # "lda": models.lda(),
     # "linear_svm": models.linear_svm(),
     # "rbf_svm": models.rbf_svm(),
-    # "random_forest": models.random_forest(),
-    "gradient_boosting": models.gradient_boosting()
+    "random_forest": models.random_forest(),
+    # "gradient_boosting": models.gradient_boosting()
 }
 
 

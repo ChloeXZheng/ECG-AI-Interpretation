@@ -207,6 +207,6 @@ Trying combos:
 
 
 Best model for each task (based on model_results.xlsx):
-    binary: gradient
+    binary: random_forest
     5 class: rbf_svm
     3 class: linear_svm
